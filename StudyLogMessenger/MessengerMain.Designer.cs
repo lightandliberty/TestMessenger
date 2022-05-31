@@ -101,6 +101,7 @@ namespace StudyLog
             this.backGroundPanel.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(32)))), ((int)(((byte)(51)))));
             this.backGroundPanel.TextString = "";
             this.backGroundPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.backGroundPanel_MouseDown);
+            this.backGroundPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OpenHostBtn_MouseMove);
             this.backGroundPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.backGroundPanel_MouseUp);
             // 
             // connectHostBtn
@@ -128,6 +129,7 @@ namespace StudyLog
             this.connectHostBtn.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(32)))), ((int)(((byte)(51)))));
             this.connectHostBtn.TextString = "호스트에\r\n접속";
             this.connectHostBtn.MouseDown += new System.Windows.Forms.MouseEventHandler(this.connectHostBtn_MouseDown);
+            this.connectHostBtn.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OpenHostBtn_MouseMove);
             this.connectHostBtn.MouseUp += new System.Windows.Forms.MouseEventHandler(this.connectHostBtn_MouseUp);
             // 
             // OpenHostBtn
@@ -155,6 +157,7 @@ namespace StudyLog
             this.OpenHostBtn.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(32)))), ((int)(((byte)(51)))));
             this.OpenHostBtn.TextString = "호스트\r\n열기";
             this.OpenHostBtn.MouseDown += new System.Windows.Forms.MouseEventHandler(this.OpenHostBtn_MouseDown);
+            this.OpenHostBtn.MouseMove += new System.Windows.Forms.MouseEventHandler(this.OpenHostBtn_MouseMove);
             this.OpenHostBtn.MouseUp += new System.Windows.Forms.MouseEventHandler(this.OpenHostBtn_MouseUp);
             // 
             // MessengerMain

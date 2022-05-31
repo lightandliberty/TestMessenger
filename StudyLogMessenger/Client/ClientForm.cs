@@ -12,6 +12,24 @@ using System.Net;
 
 namespace StudyLog.Client
 {
+
+    // 에러나다가 gameserver[0]의 접속 끊기는 부분에서, Clear해줬더니 잘 됨.
+
+    //CUserToken의 sending_queue를 비워줘야 하는 듯하다.
+
+    //token.On_Removed()에서 비워지고,
+    //IPeer.On_Removed()도 호출되는데, 딱히 뭘 하진 않음.
+
+    //접속 끊기 버튼을 눌러 끊을 때,
+    //token.Disconnect()가 호출되는데,
+    //IPeer.Disconnect()는 호출되지 않으므로,
+    //혹시 token.Disconnect()에서(전송중이던 거 보내고, 소켓닫기_큐랑 상관 없음.)
+    // IPeer.Disconnect(){
+    //    token.소켓.disconnect(false)_다시 사용 안 함)
+    //를 호출해야 하는데
+    //누락된 건 아닌지 확인해 봐야 할 듯
+
+    // 서버에 클라이언트가 접속해 있을 때, 종료하면, 예외 발생함. 경고메시지 띄우고, 종료하도록 수정 예정.
     public partial class ClientForm : Form
     {
         public SettingFormArgs settingFormArgs;     // 접속 ip 설정 관련
@@ -33,7 +51,7 @@ namespace StudyLog.Client
             // OnMessage에 메서드를 추가하기 위해
             // 스레드 오류가 나면, this.InvokeRequired로 확인하고, 대리자에 담아 실행해야 하는데, 그 때를 대비하여 만들어 둠.
             cOnMessage = new CremoteServerPeerOnMessageHandler(CRemoteServerPeerOnMessage);
-
+            DisableControls();
         }
 
         // 접속 버튼
@@ -78,17 +96,46 @@ namespace StudyLog.Client
             }
             // connector는 소켓. ConnectAsync(접속객체)로 접속하고, 콜백으로 CNetworkService에 소켓을 전달해 서버로부터 수신을 받고, IPeer메서드를 등록함.
             connector.Connect(endPoint);    // 서버로부터 수신 시작.
+            
             connectPN.TextString = "종료";
         }
 
         private void DisconnectHost()
         {
             connectPN.TextString = "호스트\r\n접속"; ;
-            if(gameServers.Count > 0)   // 연결된 서버가 있는 경우,
+            if (gameServers.Count > 0)   // 연결된 서버가 있는 경우,
+            {
+
                 ((CRemoteServerPeer)gameServers[0]).token.Disconnect();
+                gameServers.Clear();
+            }
+            DisableControls();
+            isConnected = false;
         }
 
+        delegate void InvokeDelegate();
 
+        private void EnableControls()
+        {
+            if (this.InvokeRequired == true)
+                this.Invoke(new InvokeDelegate(EnableControls));
+            else
+            {
+                this.writeMsgTB.Enabled = true;
+                writeMsgLbl.Text = "접속되었습니다. 보낼 메시지를 입력해 주세요.";
+            }
+        }
+
+        private void DisableControls()
+        {
+            if (this.InvokeRequired == true)
+                this.Invoke(new InvokeDelegate(DisableControls));
+            else
+            {
+                this.writeMsgTB.Enabled = false;
+                writeMsgLbl.Text = "접속되지 않았습니다.(ip설정 후, 접속버튼을 눌러 주세요)";
+            }
+        }
 
 
 
@@ -109,6 +156,8 @@ namespace StudyLog.Client
                 
                 gameServers.Add(server);
                 Console.WriteLine("접속되었습니다.");
+                EnableControls();
+                isConnected = true;
             }
         }
 
@@ -169,6 +218,7 @@ namespace StudyLog.Client
         }
         #endregion Form 종료 관련. 끝.
 
+
         private void writeMsgTB_KeyDown(object sender, KeyEventArgs e)
         {
 
@@ -188,6 +238,12 @@ namespace StudyLog.Client
 
         private void SendLine(string txt)
         {
+            // 연결 상태가 아니면, 종료
+            if (isConnected == false)
+            {
+                return;
+            }
+
             // 헤더 다음에 프로토콜 종류를 넣음.
             CPacket msg = CPacket.Create((short)StudyLog.Server.PROTOCOL.CHAT_MSG_REQ);
             // 앞에 이름을 붙여서, 전송
@@ -199,7 +255,7 @@ namespace StudyLog.Client
             }
             catch(Exception ex)
             {
-                MessageBox.Show("SendLine(txt)의 인덱스 오류입니다. 접속이 되어 있는지 확인 바랍니다.");
+                MessageBox.Show("SendLine(txt)의 인덱스 오류입니다. 접속이 되어 있는지 확인 바랍니다."+ex.ToString());
                 return;
             }
         }
@@ -224,5 +280,12 @@ namespace StudyLog.Client
             }
         }
 
+        private void writeMsgTB_Click(object sender, EventArgs e)
+        {
+            if(this.writeMsgTB.Enabled == false)
+                writeMsgLbl.Text = "접속되지 않았습니다. IP설정등 연결을 확인해 주세요.";
+            else
+                writeMsgLbl.Text = "접속되었습니다. 보낼 메시지를 입력해 주세요.";
+        }
     }
 }

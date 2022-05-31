@@ -150,6 +150,7 @@ namespace StudyLog.Client
             this.writeMsgTB.Name = "writeMsgTB";
             this.writeMsgTB.Size = new System.Drawing.Size(379, 33);
             this.writeMsgTB.TabIndex = 11;
+            this.writeMsgTB.Click += new System.EventHandler(this.writeMsgTB_Click);
             this.writeMsgTB.KeyDown += new System.Windows.Forms.KeyEventHandler(this.writeMsgTB_KeyDown);
             // 
             // changeIPBtn

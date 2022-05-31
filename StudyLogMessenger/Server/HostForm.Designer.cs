@@ -31,7 +31,6 @@ namespace StudyLog.Server
         {
             this.closeBtn = new System.Windows.Forms.Button();
             this.shadowPanel1 = new CustomControls_dll.ShadowPanel();
-            this.client2MsgLbl = new System.Windows.Forms.Label();
             this.client1MsgLbl = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.hostPN = new CustomControls_dll.ShadowPanel();
@@ -51,7 +50,6 @@ namespace StudyLog.Server
             // shadowPanel1
             // 
             this.shadowPanel1.BackgroundGradientMode = CustomControls_dll.PanelGradientMode.Vertical;
-            this.shadowPanel1.Controls.Add(this.client2MsgLbl);
             this.shadowPanel1.Controls.Add(this.client1MsgLbl);
             this.shadowPanel1.Controls.Add(this.button1);
             this.shadowPanel1.Controls.Add(this.hostPN);
@@ -74,17 +72,6 @@ namespace StudyLog.Server
             this.shadowPanel1.TabIndex = 4;
             this.shadowPanel1.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(58)))), ((int)(((byte)(32)))), ((int)(((byte)(51)))));
             this.shadowPanel1.TextString = "";
-            // 
-            // client2MsgLbl
-            // 
-            this.client2MsgLbl.AutoSize = true;
-            this.client2MsgLbl.BackColor = System.Drawing.Color.Transparent;
-            this.client2MsgLbl.Font = new System.Drawing.Font("굴림", 14F);
-            this.client2MsgLbl.Location = new System.Drawing.Point(247, 125);
-            this.client2MsgLbl.Name = "client2MsgLbl";
-            this.client2MsgLbl.Size = new System.Drawing.Size(117, 19);
-            this.client2MsgLbl.TabIndex = 3;
-            this.client2MsgLbl.Text = "client2MsgLbl";
             // 
             // client1MsgLbl
             // 
@@ -157,7 +144,6 @@ namespace StudyLog.Server
         private CustomControls_dll.ShadowPanel hostPN;
         private System.Windows.Forms.Button button1;
         private CustomControls_dll.ShadowPanel shadowPanel1;
-        private System.Windows.Forms.Label client2MsgLbl;
         private System.Windows.Forms.Label client1MsgLbl;
     }
 }

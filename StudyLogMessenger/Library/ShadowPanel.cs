@@ -12,7 +12,6 @@ using System.Runtime.InteropServices;   // [DllImport("shlwapi.dll")] 사용을 
 /// <summary>
 /// 그림자를 그리고, 버튼 종류별 그리는 메서드를 호출하면, 모서리를 그리고(네온 버튼 제외), 버튼의 윗면을 그린다.
 /// </summary>
-
 namespace CustomControls_dll
 {
     [DefaultEvent("Click")]

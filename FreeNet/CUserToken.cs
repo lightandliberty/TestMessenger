@@ -202,8 +202,13 @@ namespace FreeNet
         //        Process_Send(this.send_event_args);
         //}
 
+        // IPeer.Disconnect()에서 token.socket.Disconnect(false)가 처리되더록 설정되어 있지만,/
+        // 접속된 경우 아니면 에러나는 듯해서, 그건 사용하지 않고,
+        // 그냥 token.Disconnect()만 호출해서 연결 종료하는 듯하다.
         public void Disconnect()
         {
+            if (this.socket.Connected == false)
+                return;
             // 클라이언트와 연결된 소켓을 닫는다.
             try
             {
@@ -211,6 +216,9 @@ namespace FreeNet
             }
             // throws if client process has already closed
             catch (Exception) { }
+            if (sending_queue.Count > 0)
+                sending_queue.Clear();
+            this.socket.Disconnect(false);
             this.socket.Close();
         }
 

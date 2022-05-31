@@ -40,6 +40,7 @@ namespace FreeNet
                 On_Connect_Completed(null, event_arg);
         }
 
+        // 서버에 접속 완료되면, 이 메서드가 호출됨.
         void On_Connect_Completed(object sender, SocketAsyncEventArgs e)
         {
             if (e.SocketError == SocketError.Success)

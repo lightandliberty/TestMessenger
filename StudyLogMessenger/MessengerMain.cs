@@ -201,11 +201,9 @@ namespace StudyLog
             Properties.Settings.Default.Save();
         }
 
-
-
-
-
-
-
+        private void OpenHostBtn_MouseMove(object sender, MouseEventArgs e)
+        {
+            isBtn_MouseMove(sender, e);
+        }
     }
 }

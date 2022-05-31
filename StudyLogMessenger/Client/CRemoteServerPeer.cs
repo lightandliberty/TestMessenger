@@ -47,8 +47,16 @@ namespace StudyLog.Client
             this.token.Send(msg);
         }
 
+        /// <summary>
+        /// token.On_Removed()에서 비워지고,
+        /// IPeer.On_Removed() 도 호출되는데, IPeer.Disconnect()는 호출이 안되네? 오륜가?
+        /// 
+        /// </summary>
+        
+        // 현재 token.Disconnect()에서(전송중이던 거 보내고,소켓닫기_큐랑 상관 없음.) 로 token.Disconnect()에서 처리됨.
         void IPeer.Disconnect()
         {
+            
             this.token.socket.Disconnect(false);    // 이건 연결이 되어 있을 경우가 아니면, 오류나는 듯하다.
         }
 
