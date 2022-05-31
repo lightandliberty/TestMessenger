@@ -21,10 +21,12 @@ namespace FreeNet
         // 새로운 클라이언트가 접속했을 때 호출되는 콜백.
         public delegate void NewClientHandler(Socket client_socket, object token);
         public NewClientHandler CallBack_On_NewClient;
+        OnAcceptCompletedHandler onAcceptCompletedHandler;  // OnAcceptCompleted 처리를 위해.
 
         public CListener()
         {
             this.CallBack_On_NewClient = null;
+            onAcceptCompletedHandler = new OnAcceptCompletedHandler(On_Accept_Completed);   // On_Accept_Completed만 바꿔주면, 다른 메서드도 등록 가능.
         }
 
         public void Start(string host, int port, int backLog)
@@ -118,8 +120,14 @@ namespace FreeNet
                 // 즉시 완료되어 Do_Listen()이벤트에서 On_Accept_Completed가 실행되는 거면, 이 스레드에서 실행되는 거니까.
                 // 스레드에서 On_Accept_Completed(null, this.accept_args)를 실행해 줘야 하지 않을까?
                 // 안그러면, 처리가 다 될 때가지, 수신 클라이언트가 계속 대기하며 쌓이게 될 테니까,
+
+                
                 if (!pending)
-                    On_Accept_Completed(null, this.accept_args);
+                {
+                    // 이 부분이 실행되는지 검증해야 하는데, 실행이 되지 않아, 검증 못 함.
+                    onAcceptCompletedHandler.BeginInvoke(null, this.accept_args, new AsyncCallback(CallEndInvoke), onAcceptCompletedHandler);
+                    // On_Accept_Completed(null, this.accept_args);
+                }
 
 
                 // 클라이언트 접속 처리가 완료되면 이벤트 객체의 신호를 전달받아 다시 루프를 수행하도록 합니다.
@@ -132,8 +140,11 @@ namespace FreeNet
             }
         }
 
+        delegate void OnAcceptCompletedHandler(object sender, SocketAsyncEventArgs e);
+
         /// <summary>
         /// AcceptAsync의 콜백 메서드
+        /// 소켓을 보관해 놓고, 다시 접속을 계속 받도록 돌리면서, 콜백 메서드 실행.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e">AcceptAsync() 메서드 호출시 사용된 이벤트 객체</param>
@@ -168,8 +179,27 @@ namespace FreeNet
 
             // 다음 연결을 받아들인다.
             this.flow_control_event.Set();
-
         }
+
+        // Just to call EndInvoke as the docs say we have to:
+        // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/cpguide/html/cpovrasynchronousprogrammingoverview.asp
+        void CallEndInvoke(IAsyncResult result)
+        {
+            try
+            {
+                // delegate개체에 .BeginInvoke의 반환값 IAsyncResult result의 .AsyncState속성값을 저장.
+                // 사실 result.AsyncState는 .BeginInvoke의 세 번째 배개변수다.
+                OnAcceptCompletedHandler onAcceptCompleted = (OnAcceptCompletedHandler)result.AsyncState;
+                // delegate개체의 .EndInvoke()에 .BeginInvoke의 반환값 result를 매개변수로 저장해서 실행
+                onAcceptCompleted.EndInvoke(result);
+            }
+            catch (Exception ex)
+            {
+                // Don't let failed worker thread scare user...
+                System.Diagnostics.Debug.WriteLine(string.Format("Failed worker thread: {0}", ex.Message));
+            }
+        }
+
 
         //int connected_count = 0;
         //void On_New_Client(Socket client_socket)
